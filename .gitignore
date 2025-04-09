@@ -1,0 +1,4 @@
+__pycache__/
+.env
+venv/
+url_storage.json
