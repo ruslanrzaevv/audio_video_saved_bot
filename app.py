@@ -14,10 +14,18 @@ bot = Bot(token=os.getenv('TOKEN'))
 async def main():
     if not os.path.exists('downloads'):
         os.makedirs('downloads')
+        
+    webhook_response = await bot.delete_webhook()
+    if webhook_response:
+        print('OK')
+    else:
+        print('Ошибка при удалении webhook.')
+
+        
     dp.include_router(user_router)
     dp.include_router(calback_router)
 
-    await dp.start_polling(bot)
+    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
 
 
