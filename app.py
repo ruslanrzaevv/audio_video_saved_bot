@@ -15,7 +15,7 @@ async def main():
     if not os.path.exists('downloads'):
         os.makedirs('downloads')
         
-    webhook_response = await bot.delete_webhook()
+    webhook_response = await bot.delete_webhook(drop_pending_updates=True)
     if webhook_response:
         print('OK')
     else:
@@ -33,4 +33,4 @@ if __name__ == '__main__':
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print('Bot stopped')
+        print('Bot stopped');
