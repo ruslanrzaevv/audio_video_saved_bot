@@ -5,6 +5,8 @@ import os
 import time
 import yt_dlp
 from aiogram.types import FSInputFile
+from aiogram.types import Message
+from aiogram.types import BufferedInputFile
 
 DOWNLOAD_PATH = 'downloads'
 
@@ -15,7 +17,7 @@ def convert_m4a_to_mp3(m4a_path):
         (
             ffmpeg
             .input(m4a_path)
-            .output(mp3_path, vcodec='libx264',acodec='aac', strict='experimental')
+            .output(mp3_path, acodec='libmp3lame', audio_bitrate='192k')
             .run(overwrite_output=True)
         )
         return mp3_path
@@ -32,8 +34,9 @@ async def download_and_send(bot, chat_id, url, media_type):
     if media_type == 'video':
 
         ydl_opts = {
-    'format': 'bestvideo+bestaudio/best',
-        'outtmpl': f'downloads/%(title)s.{"mp4" if media_type == "video" else "m4a"}',
+        'outtmpl': 'downloads/%(title).100s.%(ext)s',
+        'sanitize_filename': True,
+        # 'outtmpl': f'downloads/%(title)s.{"mp4" if media_type == "video" else "m4a"}',
         }
     elif media_type == 'audio':
         ydl_opts = {
@@ -63,7 +66,11 @@ async def download_and_send(bot, chat_id, url, media_type):
         media_file = FSInputFile(filename)
         
         if media_type == 'video':
-            await bot.send_video(chat_id, media_file, caption=f'Video, timeout:{eplased_time:.2f}')
+            if media_type == 'video':
+                with open(filename, 'rb') as video_file:
+                    video_data = video_file.read()
+                    input_video = BufferedInputFile(video_data, filename='video.mp4')
+                    await bot.send_video(chat_id,input_video, caption=f'Video, timeout: {eplased_time:.2f}')
         else:
             if filename.endswith('.m4a'):
                 mp3_file = convert_m4a_to_mp3(filename)
