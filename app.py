@@ -6,6 +6,7 @@ from aiogram import Bot, Dispatcher
 
 from handlers.user_private import user_router
 from handlers.calback import calback_router
+from db.database import init_db
 
 dp = Dispatcher()
 bot = Bot(token=os.getenv('TOKEN'))
@@ -30,7 +31,8 @@ async def main():
 
 
 if __name__ == '__main__':
+    init_db()
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print('Bot stopped');
+        print('Bot stopped')
